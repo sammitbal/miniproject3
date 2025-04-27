@@ -12,10 +12,14 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Frontmatter
 
 ```{r}
+remove(list = ls())
 library(glmnet)
 library(rpart)
 library(rattle) # for the fancyRpartPlot()
 library(tidyverse)
+library(readxl)
+COD_dataset <- read_excel("./CODGames2_mp.xlsx")
+
 ```
 
 
