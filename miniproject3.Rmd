@@ -21,7 +21,20 @@ library(tidyverse)
 library(readxl)
 library(gridExtra)
 # The Dataset
-COD_dataset <- read_excel("./CODGames2_mp.xlsx")
+COD_dataset <- read_excel("./CODGames2_mp.xlsx") 
+
+# WinLoss = 1 (Win), 0 (Loss)
+COD_dataset <- COD_dataset %>%
+  # Creating integers PlayerScore and OtherScore
+  separate(Result, 
+           into = c("PlayerScore", "OtherScore"), 
+           sep = "-") %>%
+  mutate(PlayerScore = as.integer(PlayerScore)) %>%
+  mutate(OtherScore = as.integer(OtherScore)) %>%
+  # Restoring "Result" variable
+  mutate(Result = COD_dataset$Result) %>%
+  mutate(WinLoss = ifelse(PlayerScore > OtherScore, "Win", "Loss")) %>%
+  mutate(WinLossNum = as.factor(ifelse(WinLoss == "Win", 1, 0)))
 ```
 
 
@@ -77,6 +90,21 @@ Suppose we wish to build an appropriate model for modeling the Score variable fo
 - Build a regression tree for predicting Score using total XP, eliminations, deaths, damage, XPType, and whether the player’s team won. 
 - Specify that each node must contain at least 15 observations. 
 - Display the tree and report the variables associated with the 3 highest variable importance values. (Include the variable importance values when mentioning the variables.)
+
+```{r}
+RegTree <- rpart(Score ~ TotalXP + Eliminations + Deaths + Damage + XPType + WinLossNum,
+                 method = "anova", # Regression Tree
+                 data = COD_dataset,
+                 minbucket = 15) # Each node >= 15 observations
+
+fancyRpartPlot(RegTree, cex = 0.7)
+
+# Three Most Important Variables
+varImps <- 100*RegTree$variable.importance/sum(RegTree$variable.importance)
+varImps
+```
+
+**Variable Importances:** In the context of a Regression Tree built upon the variables TotalXP, Eliminations, Deaths, Damage, XPType, and WinLossNum (an indicator variable, with 1 meaning the team won, and 0 if they drew or lost), the three most important variables for creating the tree were Damage (44.22%-important to the tree's creation), Elimination (41.25%-important to the tree's creation), and TotalXP (11.90%-important to the tree's creation). 
 
 ### Part (c) (Jason)
 
