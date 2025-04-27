@@ -13,22 +13,49 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 remove(list = ls())
+
+# All Libraries
 library(glmnet)
 library(rpart)
 library(rattle) # for the fancyRpartPlot()
 library(tidyverse)
 library(readxl)
+
+# The Dataset
 COD_dataset <- read_excel("./CODGames2_mp.xlsx")
-
 ```
 
 
-## Including Plots
+## Task 1: TotalXP + XPType (Thaddeus)
 
-You can also embed plots, for example:
+After removing the cases in which the player only participated in a fraction of the match, create side-by-side boxplots showing the relationship between TotalXP and XPType. (Be sure to use proper axis labels rather than the variable names.) Supplement the plots with summary statistics of TotalXP for each level of XPType. What have you learned about the relationship between XPType and TotalXP?
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+## Task 2
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Suppose we wish to build an appropriate model for modeling the Score variable for games in which the player participated in the full match of a HC – TDM game type. We wish to answer the following research question: Of the predictors total XP, eliminations, deaths, damage, XPType, and whether the player’s team won, which should be included in a model for the Score? To answer this, you will have to create a new variable that indicates whether the player was on the winning team or not. NOTE: Since this is an inference question and we are not worried about how well the model will generalize to new data, there is no need to do a training/validation split in this problem.
+
+### Part (a) (Sammit)
+
+- Implement LASSO regression and one other feature selection procedure that we covered in Lecture 15. 
+- Include relevant plots, a discussion on which value of lambda you selected, the estimated equation from LASSO and the estimated equation from the second method. 
+- Discuss/compare the results of LASSO with those of the other method. 
+
+### Part (b) (Jason)
+
+- Build a regression tree for predicting Score using total XP, eliminations, deaths, damage, XPType, and whether the player’s team won. 
+- Specify that each node must contain at least 15 observations. 
+- Display the tree and report the variables associated with the 3 highest variable importance values. (Include the variable importance values when mentioning the variables.)
+
+### Part (c) (Jason)
+
+When building linear regression models, we often wish to determine which variables are the most important. One way of doing this is to look at the magnitude (absolute value) of the estimated coefficients for the regression model built using standardized inputs (centered to have a mean of 0 and a standard deviation of 1). 
+
+*Based on the variables selected by the other feature selection procedure from part (a)* (in other words, not the LASSO model)...
+
+1. standardize the inputs, 
+2. build the regression model, 
+3. report the estimated equation, and
+4. report the 3 most important variables based on the magnitude (absolute value) of the estimated coefficients. 
+
+**Question:** How does this compare to the most important variables based on the regression tree?
+
