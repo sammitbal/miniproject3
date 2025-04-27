@@ -12,14 +12,14 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Frontmatter
 
 ```{r}
-
+remove(list = ls())
 # All Libraries
 library(glmnet)
 library(rpart)
 library(rattle) # for the fancyRpartPlot()
 library(tidyverse)
 library(readxl)
-
+library(gridExtra)
 # The Dataset
 COD_dataset <- read_excel("./CODGames2_mp.xlsx")
 ```
@@ -28,6 +28,39 @@ COD_dataset <- read_excel("./CODGames2_mp.xlsx")
 ## Task 1: TotalXP + XPType (Thaddeus)
 
 After removing the cases in which the player only participated in a fraction of the match, create side-by-side boxplots showing the relationship between TotalXP and XPType. (Be sure to use proper axis labels rather than the variable names.) Supplement the plots with summary statistics of TotalXP for each level of XPType. What have you learned about the relationship between XPType and TotalXP?
+
+
+```{r}
+COD_dataset %>%
+  filter(FullPartial == "Full")
+```
+
+
+
+```{r}  
+xpType <-ggplot(COD_dataset, aes(x = XPType, 
+                        y = TotalXP, 
+                        color = XPType)) +
+  labs(x = "Type of XP earned", 
+       y = "Total XP earned in a game", 
+       title = "Relationship between TotalXP and XPType") +
+geom_boxplot()
+
+xpType
+```
+
+
+```{r}
+COD_dataset %>%
+  group_by(XPType) %>%
+  summarise(
+    mean_TotalXP = mean(TotalXP, na.rm = TRUE),
+    median_TotalXP = median(TotalXP, na.rm = TRUE),
+    sd_TotalXP = sd(TotalXP, na.rm = TRUE),
+    count = n()
+  )
+```
+Based off the graph, Double XP + 10% XP boost have a significantly higher median than just a 10% XP boost. 
 
 ## Task 2
 
