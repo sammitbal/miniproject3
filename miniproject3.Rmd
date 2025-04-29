@@ -185,14 +185,23 @@ rmse
 
 ```
 
-692.9045 - Lasso RMSE
-
-692.8435 - Backward Elimination RMSE
 
 
-**Discussion**
+**Discussion**:
 
 
+The estimated equation for Lasso is: $\hat(y) = 937.15693473 + 0.05984054x_(TotalXP) + 159.12937918x_(Eliminations) + -72.77820466x_(Deaths) + 0.94772672x_(Damage) + -361.57550500x_(XPTypeDouble XP) + -447.19199686x_(WinLossNum1)$
+
+
+The estimated equation for Backward Elimination is: $\hat(y) = 944.05302 + 0.06054x_(TotalXP) + 185.24081x_(Eliminations) + -73.25104x_(Deaths) + -367.94000x_(XPTypeDouble XP) + -454.44701x_(WinLossNum1)$
+
+
+The lambda I selected was 2.611974 which came from the min lambda. I chose this because it resulted in a better RMSE value. 
+
+Looking at the two RMSE values from these methods Backward Elimination is slightly better. Backward Elimination has an RMSE of 692.8435, while LASSO has an RMSE of 692.9045. 
+
+
+Looking at the variables both methods selected is also interesting. Both methods kept TotalXP, Eliminations, Deaths, XPTypeDouble XP, and WinLossNum1. The one variable the left out in Backward Elimination was damage. This is expected behavior as LASSO tends to shrink small coefficients like Damage without fully dropping them. While Backward Elimination might drop variables that don’t improve the model.
 
 
 ### Part (b) (Jason)
