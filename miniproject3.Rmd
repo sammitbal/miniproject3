@@ -148,15 +148,12 @@ lassoRMSE
 
 
 ```{r}
-### f Model: Backward elimination
+### Backwards Selection Model
 int_only_model <- lm(Score ~ 1, 
-                     family = binomial, 
                      data = filtered_data)
 
-# Full Model -> Backwards Seelction
 full_model <- lm(Score ~ TotalXP + Eliminations + Deaths + Damage + XPType + WinLossNum, 
-                  family = binomial, 
-                  data = filtered_data)
+                 data = filtered_data)
 
 stats::step(object = full_model, 
             scope = list(lower = int_only_model, upper = full_model),
@@ -194,7 +191,7 @@ Looking at the variables both methods selected is also interesting. Both methods
 # Creating + Visualizing the regression tree
 RegTree <- rpart(Score ~ TotalXP + Eliminations + Deaths + Damage + XPType + WinLossNum,
                  method = "anova", # Regression Tree
-                 data = COD_dataset,
+                 data = filtered_data,
                  minbucket = 15) # Each node >= 15 observations
 
 fancyRpartPlot(RegTree, cex = 0.7)
@@ -204,7 +201,7 @@ varImps <- 100*RegTree$variable.importance/sum(RegTree$variable.importance)
 varImps
 ```
 
-**Variable Importances:** In the context of a Regression Tree built upon the variables TotalXP, Eliminations, Deaths, Damage, XPType, and WinLossNum (an indicator variable, with 1 meaning the team won, and 0 if they drew or lost), the three most important variables for creating the tree were Damage (44.22%-important to the tree's creation), Elimination (41.25%-important to the tree's creation), and TotalXP (11.90%-important to the tree's creation). 
+**Variable Importances:** In the context of a Regression Tree built upon the variables TotalXP, Eliminations, Deaths, Damage, XPType, and WinLossNum (an indicator variable, with 1 meaning the team won, and 0 if they drew or lost), the three most important variables for creating the tree were Damage (39.81%-important to the tree's creation), Elimination (37.70%-important to the tree's creation), and TotalXP (10.22%-important to the tree's creation). 
 
 ### Part (c) (Jason)
 
@@ -221,39 +218,45 @@ When building linear regression models, we often wish to determine which variabl
 
 ```{r}
 ### Considering the variables from ALT METHOD (backwards selection)
-# Score ~ TotalXP + Eliminations + Deaths + Damage + XPType + WinLossNum
-# scaled_filtered_data <- filtered_data %>%
-#   select(c("Score", "TotalXP", "Eliminations", "Deaths", "Damage", "XPType", "WinLossNum")) %>%
-#   mutate(XPType = )
-# 
-# View(scaled_filtered_data)
-# mean(scaled_filtered_data[0])
-# 
-# ### f Model: Backward elimination
-# int_only_model <- lm(Score ~ 1, 
-#                      family = binomial, 
-#                      data = filtered_data)
-# 
-# # Full Model -> Backwards Seelction
-# full_model <- lm(Score ~ TotalXP + Eliminations + Deaths + Damage + XPType + WinLossNum, 
-#                   family = binomial, 
-#                   data = filtered_data)
-# 
-# # Standardize the inputs
-# scaled_int
-# 
-# stats::step(object = full_model, 
-#             scope = list(lower = int_only_model, upper = full_model),
-#             data = filtered_data,
-#             direction = "backward")
-# 
-# # Calculating RMSE
-# rss <- sum(residuals(full_model)^2)
-# n <- nobs(full_model)
-# 
-# rmse <- sqrt(rss / n)
-# rmse
+# Predicting: Score ~ TotalXP + Eliminations + Deaths + Damage + XPType + WinLossNum
+scaled_filtered_data <- filtered_data %>%
+  select(c("Score", "TotalXP", "Eliminations", "Deaths", "Damage", "XPType", "WinLossNum")) %>%
+  mutate(XPType = ifelse(XPType == "10% Boost", 0, 1)) %>% # Note: 10% boost is 0, Double is 1 
+  mutate(WinLossNum = as.numeric(WinLossNum)) %>%
+  scale() %>%
+  as.data.frame()
+
+### Backward Elimination
+int_only_model <- lm(Score ~ 1,
+                     data = scaled_filtered_data)
+
+full_model <- lm(Score ~ .,
+                 data = scaled_filtered_data)
+
+stats::step(object = full_model,
+            scope = list(lower = int_only_model, upper = full_model),
+            data = scaled_filtered_data,
+            direction = "backward")
 ```
 
+**Estimated Equation:**
 
+$$
+\text{Score} = -1.088\text{e}^{-16}+0.2642\cdot\text{TotalXP} + 0.7115\cdot\text{Eliminations} - 0.1908\cdot\text{Deaths} - 0.1262\cdot\text{XPType} - 0.1561\cdot\text{WinlossNum}
+$$
+
+**Three Most Important Variables:**
+
+*Note:* Determined by the scale of their coefficients relative as a percentage of 1, with the greater (positive *or* negative coefficients) indicating greater significance.
+
+1. Eliminations (0.7115)
+2. TotalXP (0.2642)
+3. Deaths (0.1908)
+
+**Comparison:**
+Compared to the variables selected by the regression tree, the variables selected the "Other Feature Selection Procedure"--- Backwards Selection--- are slightly different. 
+
+- Both share the variables Eliminations and TotalXP as significant predictors, though Eliminations is rated much more highly in significance in the Backwards Selection model, because...
+- Unlike in the Regression Tree model, Damage is *eliminated from consideration* by Backwards Selection and Deaths is instead considered the third most significant. 
+- The order and scale of variables are different: Damage, not Eliminations, is considered the most significant predictor in the Regression Tree model (39.81%), whereas Eliminations is the most significant for Backwards Selection, and TotalXP is considered the third-most-important variable in the Regerssion Tree, whereas it's second in the Backwards Elimination Model. 
 
