@@ -38,7 +38,7 @@ COD_dataset <- COD_dataset %>%
 ```
 
 
-## Task 1: TotalXP + XPType (Thaddeus)
+## Task 1: TotalXP + XPType 
 
 After removing the cases in which the player only participated in a fraction of the match, create side-by-side boxplots showing the relationship between TotalXP and XPType. (Be sure to use proper axis labels rather than the variable names.) Supplement the plots with summary statistics of TotalXP for each level of XPType. What have you learned about the relationship between XPType and TotalXP?
 
@@ -84,7 +84,7 @@ Based off the graph, Double XP + 10% XP boost have a significantly higher median
 
 Suppose we wish to build an appropriate model for modeling the Score variable for games in which the player participated in the full match of a HC – TDM game type. We wish to answer the following research question: Of the predictors total XP, eliminations, deaths, damage, XPType, and whether the player’s team won, which should be included in a model for the Score? To answer this, you will have to create a new variable that indicates whether the player was on the winning team or not. NOTE: Since this is an inference question and we are not worried about how well the model will generalize to new data, there is no need to do a training/validation split in this problem.
 
-### Part (a) (Sammit)
+### Part (a)
 
 - Implement LASSO regression and one other feature selection procedure that we covered in Lecture 15. 
 - Include relevant plots, a discussion on which value of lambda you selected, the estimated equation from LASSO and the estimated equation from the second method. 
@@ -176,12 +176,12 @@ The estimated equation for Backward Elimination is: $\hat(y) = 944.05302 + 0.060
 
 The lambda I selected was 2.611974 which came from the min lambda. I chose this because it resulted in a better RMSE value. 
 
-Looking at the two RMSE values from these methods Backward Elimination is slightly better. Backward Elimination has an RMSE of 692.8435, while LASSO has an RMSE of 692.9045. 
+Looking at the two RMSE values from these methods Backward Elimination is slightly better. Backward Elimination has an RMSE of 692.8435, while LASSO has an RMSE of 692.9045. Although both of these RMSE values are very close, when predicting new data we would want to use the equation and variables selected by Backward Elimination to do so.  
 
-Looking at the variables both methods selected is also interesting. Both methods kept TotalXP, Eliminations, Deaths, XPTypeDouble XP, and WinLossNum1. The one variable the left out in Backward Elimination was damage. This is expected behavior as LASSO tends to shrink small coefficients like Damage without fully dropping them. While Backward Elimination might drop variables that don’t improve the model.
+Looking at the variables both methods selected is also interesting. Both methods kept TotalXP, Eliminations, Deaths, XPTypeDouble XP, and WinLossNum1. The one variable the left out in Backward Elimination was damage. This is expected behavior as LASSO tends to shrink small coefficients like Damage without fully dropping them. While Backward Elimination might drop variables that don’t improve the model. We can also notice how similar both models coefficients are, TotalXP, Deaths, XPTypeDouble XP, and WinLossNum1 are all very close.  
 
 
-### Part (b) (Jason)
+### Part (b)
 
 - Build a regression tree for predicting Score using total XP, eliminations, deaths, damage, XPType, and whether the player’s team won. 
 - Specify that each node must contain at least 15 observations. 
@@ -203,7 +203,7 @@ varImps
 
 **Variable Importances:** In the context of a Regression Tree built upon the variables TotalXP, Eliminations, Deaths, Damage, XPType, and WinLossNum (an indicator variable, with 1 meaning the team won, and 0 if they drew or lost), the three most important variables for creating the tree were Damage (39.81%-important to the tree's creation), Elimination (37.70%-important to the tree's creation), and TotalXP (10.22%-important to the tree's creation). 
 
-### Part (c) (Jason)
+### Part (c)
 
 When building linear regression models, we often wish to determine which variables are the most important. One way of doing this is to look at the magnitude (absolute value) of the estimated coefficients for the regression model built using standardized inputs (centered to have a mean of 0 and a standard deviation of 1). 
 
